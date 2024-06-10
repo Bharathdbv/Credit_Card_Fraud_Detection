@@ -3,6 +3,7 @@ import numpy as np
 import streamlit as st
 import pickle
 import os
+import sys
 
 # Get the directory of the current script
 current_directory = os.path.dirname(__file__)
@@ -13,10 +14,18 @@ pickle_file_path = os.path.join(current_directory, 'lr.pkl')
 # Check if the pickle file exists
 if not os.path.exists(pickle_file_path):
     st.error(f"The file 'lr.pkl' was not found in the directory {current_directory}")
+    sys.exit(1)
 else:
-    # Load the pickle file
-    with open(pickle_file_path, 'rb') as file:
-        lr = pickle.load(file)
+    try:
+        # Load the pickle file
+        with open(pickle_file_path, 'rb') as file:
+            lr = pickle.load(file)
+    except ModuleNotFoundError as e:
+        st.error(f"Module not found: {e}. Please ensure all necessary libraries are installed.")
+        sys.exit(1)
+    except Exception as e:
+        st.error(f"An error occurred while loading the model: {e}")
+        sys.exit(1)
 
     st.title("Credit Card Fraud Detection")
     st.write("It is important that credit card companies are able to recognize fraudulent credit card transactions so that customers are not charged for items that they did not purchase.")
